@@ -27,7 +27,7 @@ const search_results_template = compileTemplate('./views/search_results.pug');
 // Initialize connection once
 MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', { useUnifiedTopology: true }).then(client => {
 
-  const db: Db = client.db("brasspoll");
+  const db: Db = client.db();
   const polls: Collection<{
     poll_id: number;
     createdAt: Date;

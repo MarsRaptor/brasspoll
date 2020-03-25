@@ -62,7 +62,7 @@ var io = socket_io_1.default(server);
 var search_results_template = pug_1.compileFile('./views/search_results.pug');
 // Initialize connection once
 mongodb_1.MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', { useUnifiedTopology: true }).then(function (client) {
-    var db = client.db("brasspoll");
+    var db = client.db();
     var polls = db.collection("polls");
     // Start the application after the database connection is ready
     app.get('/', function (_, response) {
