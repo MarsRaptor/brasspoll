@@ -11,7 +11,7 @@ block content_zone_left
 
 block content_zone_right
     div(class="information")      
-    iframe(src=`http://www.strawpoll.me/embed_1/${poll_id}` id="strawpoll_embed" onload="resizeStrawpoll(this)")= 'Loading poll...' 
+    iframe(src=`https://www.strawpoll.me/embed_1/${poll_id}` id="strawpoll_embed" onload="resizeStrawpoll(this)")= 'Loading poll...' 
     .display_flex
         input(type="text" id="strawpoll_url" class="to_clipboard_value" value=`https://www.strawpoll.me/${poll_id}` readonly)
         input(type="button" class="to_clipboard_trigger" value="Copy to clipboard" onclick="copyStrawpollUrlToClipboard()")
