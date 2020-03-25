@@ -52,6 +52,11 @@ require('dotenv').config();
 Plugin_1.plugin_manager.addPlugin(new steam_1.SteamPlugin());
 Plugin_1.plugin_manager.addPlugin(new igdb_1.IgdbPlugin());
 var app = express_1.default();
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 app.use(express_1.default.json());
 app.use(express_1.default.static('public'));
 app.use('/lib/socket.io/', express_1.default.static('./node_modules/socket.io-client/dist/'));

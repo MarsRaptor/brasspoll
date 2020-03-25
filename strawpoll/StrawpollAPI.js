@@ -7,7 +7,7 @@ var StrawpollAPI = /** @class */ (function () {
     StrawpollAPI.get = function (id) {
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "strawpoll.me",
+                host: "strawpoll.me",
                 method: 'GET',
                 path: "/api/v2/polls/" + id,
                 headers: {
@@ -47,7 +47,7 @@ var StrawpollAPI = /** @class */ (function () {
     StrawpollAPI.new = function (poll_request) {
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "strawpoll.me",
+                host: "strawpoll.me",
                 method: 'POST',
                 path: "/api/v2/polls",
                 headers: {

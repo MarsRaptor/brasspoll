@@ -34,7 +34,7 @@ export default class StrawpollAPI {
 
         return new Promise<get_response>((resolve, reject) => {
             const options = {
-                hostname: `strawpoll.me`,
+                host: `strawpoll.me`,
                 method: 'GET',
                 path: `/api/v2/polls/${id}`,
                 headers: {
@@ -75,7 +75,7 @@ export default class StrawpollAPI {
     static new(poll_request: new_request): Promise<new_response> {
         return new Promise((resolve, reject) => {
             const options = {
-                hostname: `strawpoll.me`,
+                host: `strawpoll.me`,
                 method: 'POST',
                 path: `/api/v2/polls`,
                 headers: {
