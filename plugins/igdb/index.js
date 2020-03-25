@@ -71,11 +71,11 @@ var IgdbPlugin = /** @class */ (function () {
         }
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "cors-anywhere.herokuapp.com",
+                hostname: "igdb.com",
                 method: 'GET',
-                path: "/https://www.igdb.com/search_autocomplete_all?q=" + encodeURI(search),
+                path: "/search_autocomplete_all?q=" + encodeURI(search),
                 headers: {
-                    Origin: 'http://localhost:3000'
+                    Origin: 'brasspoll.herokuapp.com'
                 }
             };
             https_1.request(options, function (response) {
@@ -115,11 +115,11 @@ var IgdbPlugin = /** @class */ (function () {
                             return;
                         }
                         var options = {
-                            hostname: "cors-anywhere.herokuapp.com",
+                            hostname: "api-v3.igdb.com",
                             method: 'POST',
-                            path: "/https://api-v3.igdb.com/screenshots",
+                            path: "/screenshots",
                             headers: {
-                                Origin: 'http://localhost:3000',
+                                Origin: 'brasspoll.herokuapp.com',
                                 Accept: "application/json",
                                 "user-key": "898fea50dfb2215756a0173eb91d073f"
                             },
@@ -160,11 +160,11 @@ var IgdbPlugin = /** @class */ (function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var options = {
-                            hostname: "cors-anywhere.herokuapp.com",
+                            hostname: "api-v3.igdb.com",
                             method: 'POST',
-                            path: "/https://api-v3.igdb.com/covers",
+                            path: "/covers",
                             headers: {
-                                Origin: 'http://localhost:3000',
+                                Origin: 'brasspoll.herokuapp.com',
                                 Accept: "application/json",
                                 "user-key": "898fea50dfb2215756a0173eb91d073f"
                             }
@@ -257,11 +257,11 @@ var IgdbPlugin = /** @class */ (function () {
         }
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "cors-anywhere.herokuapp.com",
+                hostname: "api-v3.igdb.com",
                 method: 'POST',
-                path: "/https://api-v3.igdb.com/games",
+                path: "/games",
                 headers: {
-                    Origin: 'http://localhost:3000',
+                    Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
                     "user-key": "898fea50dfb2215756a0173eb91d073f"
                 }
@@ -314,11 +314,11 @@ var IgdbPlugin = /** @class */ (function () {
         }
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "cors-anywhere.herokuapp.com",
+                hostname: "api-v3.igdb.com",
                 method: 'POST',
-                path: "/https://api-v3.igdb.com/games",
+                path: "/games",
                 headers: {
-                    Origin: 'http://localhost:3000',
+                    Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
                     "user-key": "898fea50dfb2215756a0173eb91d073f"
                 }

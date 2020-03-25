@@ -7,11 +7,11 @@ var StrawpollAPI = /** @class */ (function () {
     StrawpollAPI.get = function (id) {
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "cors-anywhere.herokuapp.com",
+                hostname: "strawpoll.me",
                 method: 'GET',
-                path: "/https://www.strawpoll.me/api/v2/polls/" + id,
+                path: "/api/v2/polls/" + id,
                 headers: {
-                    Origin: 'http://localhost:3000'
+                    Origin: 'brasspoll.herokuapp.com'
                 }
             };
             https_1.request(options, function (response) {
@@ -22,14 +22,20 @@ var StrawpollAPI = /** @class */ (function () {
                 });
                 response.on('end', function () {
                     if (data !== '') {
-                        var json = JSON.parse(data);
-                        if (!!json) {
-                            resolve(json);
+                        try {
+                            var json = JSON.parse(data);
+                            if (!!json) {
+                                resolve(json);
+                            }
+                            else {
+                                var err = Error("Error in response from strawpoll API");
+                                console.error(err);
+                                reject(err);
+                            }
                         }
-                        else {
-                            var err = Error("Error in response from strawpoll API");
-                            console.error(err);
-                            reject(err);
+                        catch (error) {
+                            console.error(error);
+                            reject(error);
                         }
                     }
                 });
@@ -41,11 +47,11 @@ var StrawpollAPI = /** @class */ (function () {
     StrawpollAPI.new = function (poll_request) {
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "cors-anywhere.herokuapp.com",
+                hostname: "strawpoll.me",
                 method: 'POST',
-                path: "/https://www.strawpoll.me/api/v2/polls",
+                path: "/api/v2/polls",
                 headers: {
-                    Origin: 'http://localhost:3000',
+                    Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
                 }
             };
@@ -57,14 +63,20 @@ var StrawpollAPI = /** @class */ (function () {
                 });
                 response.on('end', function () {
                     if (data !== '') {
-                        var json = JSON.parse(data);
-                        if (!!json) {
-                            resolve(json);
+                        try {
+                            var json = JSON.parse(data);
+                            if (!!json) {
+                                resolve(json);
+                            }
+                            else {
+                                var err = Error("Error in response from strawpoll API");
+                                console.error(err);
+                                reject(err);
+                            }
                         }
-                        else {
-                            var err = Error("Error in response from strawpoll API");
-                            console.error(err);
-                            reject(err);
+                        catch (error) {
+                            console.error(error);
+                            reject(error);
                         }
                     }
                 });

@@ -35,11 +35,11 @@ var SteamPlugin = /** @class */ (function () {
         }
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "cors-anywhere.herokuapp.com",
+                hostname: "store.steampowered.com",
                 method: 'GET',
-                path: "/https://store.steampowered.com/search/suggest?term=" + encodeURI(search) + "&f=games&cc=FR&realm=1",
+                path: "/search/suggest?term=" + encodeURI(search) + "&f=games&cc=FR&realm=1",
                 headers: {
-                    Origin: 'http://localhost:3000'
+                    Origin: 'brasspoll.herokuapp.com'
                 }
             };
             https_1.request(options, function (response) {
@@ -83,11 +83,11 @@ var SteamPlugin = /** @class */ (function () {
         }
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "cors-anywhere.herokuapp.com",
+                hostname: "store.steampowered.com",
                 method: 'GET',
-                path: "/https://store.steampowered.com/api/appdetails?appids=" + retreival_data.steam_appid,
+                path: "/api/appdetails?appids=" + retreival_data.steam_appid,
                 headers: {
-                    Origin: 'http://localhost:3000'
+                    Origin: 'brasspoll.herokuapp.com'
                 }
             };
             https_1.request(options, function (response) {

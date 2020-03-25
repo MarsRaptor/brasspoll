@@ -72,11 +72,11 @@ export class SteamPlugin implements Plugin<steam_retrieval_data_t, steam_details
 
         return new Promise<search_result_t<steam_retrieval_data_t>[]>((resolve, reject) => {
             const options = {
-                hostname: `cors-anywhere.herokuapp.com`,
+                hostname: `store.steampowered.com`,
                 method: 'GET',
-                path: `/https://store.steampowered.com/search/suggest?term=${encodeURI(search)}&f=games&cc=FR&realm=1`,
+                path: `/search/suggest?term=${encodeURI(search)}&f=games&cc=FR&realm=1`,
                 headers: {
-                    Origin: 'http://localhost:3000'
+                    Origin: 'brasspoll.herokuapp.com'
                 }
             };
             request(options, (response) => {
@@ -130,11 +130,11 @@ export class SteamPlugin implements Plugin<steam_retrieval_data_t, steam_details
 
         return new Promise<details_t<steam_retrieval_data_t, steam_details_t>>((resolve, reject) => {
             const options = {
-                hostname: `cors-anywhere.herokuapp.com`,
+                hostname: `store.steampowered.com`,
                 method: 'GET',
-                path: `/https://store.steampowered.com/api/appdetails?appids=${retreival_data.steam_appid}`,
+                path: `/api/appdetails?appids=${retreival_data.steam_appid}`,
                 headers: {
-                    Origin: 'http://localhost:3000'
+                    Origin: 'brasspoll.herokuapp.com'
                 }
             };
             request(options, (response) => {

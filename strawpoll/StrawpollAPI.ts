@@ -34,11 +34,11 @@ export default class StrawpollAPI {
 
         return new Promise<get_response>((resolve, reject) => {
             const options = {
-                hostname: `cors-anywhere.herokuapp.com`,
+                hostname: `strawpoll.me`,
                 method: 'GET',
-                path: `/https://www.strawpoll.me/api/v2/polls/${id}`,
+                path: `/api/v2/polls/${id}`,
                 headers: {
-                    Origin: 'http://localhost:3000'
+                    Origin: 'brasspoll.herokuapp.com'
                 }
             };
             request(options, (response) => {
@@ -50,13 +50,18 @@ export default class StrawpollAPI {
                 });
                 response.on('end', () => {
                     if (data !== '') {
-                        let json = JSON.parse(data);
-                        if (!!json) {
-                            resolve(json)
-                        } else {
-                            let err = Error("Error in response from strawpoll API");
-                            console.error(err);
-                            reject(err);
+                        try {
+                            let json = JSON.parse(data);
+                            if (!!json) {
+                                resolve(json)
+                            } else {
+                                let err = Error("Error in response from strawpoll API");
+                                console.error(err);
+                                reject(err);
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            reject(error);
                         }
                     }
                 })
@@ -70,11 +75,11 @@ export default class StrawpollAPI {
     static new(poll_request: new_request): Promise<new_response> {
         return new Promise((resolve, reject) => {
             const options = {
-                hostname: `cors-anywhere.herokuapp.com`,
+                hostname: `strawpoll.me`,
                 method: 'POST',
-                path: `/https://www.strawpoll.me/api/v2/polls`,
+                path: `/api/v2/polls`,
                 headers: {
-                    Origin: 'http://localhost:3000',
+                    Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
                 }
             };
@@ -87,13 +92,18 @@ export default class StrawpollAPI {
                 });
                 response.on('end', () => {
                     if (data !== '') {
-                        let json = JSON.parse(data);
-                        if (!!json) {
-                            resolve(json)
-                        } else {
-                            let err = Error("Error in response from strawpoll API");
-                            console.error(err);
-                            reject(err);
+                        try {
+                            let json = JSON.parse(data);
+                            if (!!json) {
+                                resolve(json)
+                            } else {
+                                let err = Error("Error in response from strawpoll API");
+                                console.error(err);
+                                reject(err);
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            reject(error);
                         }
                     }
                 })
