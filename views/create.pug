@@ -1,0 +1,42 @@
+extends common.pug
+
+block scripts
+    script( src="/lib/socket.io/socket.io.js")
+
+block styles
+    link(rel="stylesheet" type="text/css" href="/styles/create.css" media="screen")
+
+block content_zone_left
+    .display_flex
+        input(id="search" type="search" autocomplete="off" incremental="true" placeholder="Enter poll option")                       
+    details(class="configuration")
+        summary= "Search configuration"  
+        include .generated/search_configuration_mixins.pug       
+    div(class="information")          
+    table(id="results" class="options_table")
+        tbody
+
+block content_zone_right
+    .display_flex
+        input(id="title" type="text" autocomplete="off" placeholder="Enter poll name")      
+        input(id="create_poll" type="button" disabled="true" value="Create poll" onclick="create_poll()")        
+    details(class="configuration")
+        summary= "Poll configuration"                                
+        label
+            select(name="dupcheck" id="dupcheck")
+                option(value="1" selected="selected")= 'IP Duplication Checking' 
+                option(value="2")= 'Browser Cookie Duplication Checking'
+                option(value="3")= 'No Duplication Checking'
+        label
+            = 'Improve spam prevention '
+            input(type="checkbox" id="captcha" name="captcha" value="captcha")
+        label
+            = 'Allow multiple poll answers '
+            input(type="checkbox" id="multi" name="multi" value="multi")     
+    div(class="information")       
+    table(id="selected_options" class="options_table")
+        tbody
+            include selected_options.pug
+
+block inline_scripts
+    script(src="/scripts/create.js")

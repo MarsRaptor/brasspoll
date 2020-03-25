@@ -1,0 +1,26 @@
+.to_clipboard_trigger {
+    padding: 12px 20px;
+    margin-right: 0.5em;
+    box-sizing: border-box;
+    background-color: var(--light-bg-color);
+    color: var(--default-text-color);
+    border: 2px outset #333;
+    font-size: medium;
+}
+
+.to_clipboard_value {
+    width: 100%;
+    padding: 12px 20px;
+    margin-left: 0.5em;
+    box-sizing: border-box;
+}
+
+.new_poll_trigger {
+    padding: 12px 20px;
+    margin: 0.5em;
+    box-sizing: border-box;
+    background-color: var(--light-bg-color);
+    color: var(--default-text-color);
+    border: 2px outset #333;
+    font-size: medium;
+}

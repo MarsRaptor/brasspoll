@@ -1,0 +1,45 @@
+#search {
+    width: 100%;
+    padding: 12px 20px;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    box-sizing: border-box;
+}
+
+#title {
+    width: 100%;
+    padding: 12px 20px;
+    margin-left: 0.5em;
+    box-sizing: border-box;
+}
+
+#create_poll {
+    padding: 12px 20px;
+    margin-right: 0.5em;
+    box-sizing: border-box;
+    background-color: var(--light-bg-color);
+    color: var(--default-text-color);
+    border: 2px outset #333;
+    font-size: medium;
+}
+
+#create_poll:hover {
+    cursor: pointer;
+}
+
+#results>tbody>tr.option_row>td:last-of-type {
+    content: url(https://cdn.pixabay.com/photo/2016/03/21/05/05/plus-1270001_960_720.png);
+}
+
+#selected_options>tbody>tr.option_row>td:last-of-type {
+    content: url(https://openclipart.org/image/2400px/svg_to_png/218663/Delete-Button.png);
+}
+
+.configuration {
+    color: var(--default-text-color);
+    cursor: pointer;
+    font-family: "roboto", arial;
+    font-weight: 300;
+    background-color: var(--halfdark-bg-color);
+    margin-right: 1em;
+}
