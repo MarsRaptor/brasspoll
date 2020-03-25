@@ -1,5 +1,5 @@
 
-import { request } from 'https';
+import { request,get } from 'https';
 export type dupcheck = "normal" | "permissive" | "disabled";
 export type get_response = {
     id: number,
@@ -33,15 +33,8 @@ export default class StrawpollAPI {
     static get(id: number): Promise<get_response> {
 
         return new Promise<get_response>((resolve, reject) => {
-            const options = {
-                host: `strawpoll.me`,
-                method: 'GET',
-                path: `/api/v2/polls/${id}`,
-                headers: {
-                    Origin: 'brasspoll.herokuapp.com'
-                }
-            };
-            request(options, (response) => {
+           
+            get(`https://www.strawpoll.me/api/v2/polls/${id}`, (response) => {
                 let data = '';
 
                 // A chunk of data has been recieved.
@@ -60,6 +53,7 @@ export default class StrawpollAPI {
                                 reject(err);
                             }
                         } catch (error) {
+                            console.log(data);
                             console.error(error);
                             reject(error);
                         }
@@ -75,7 +69,7 @@ export default class StrawpollAPI {
     static new(poll_request: new_request): Promise<new_response> {
         return new Promise((resolve, reject) => {
             const options = {
-                host: `strawpoll.me`,
+                host: `www.strawpoll.me`,
                 method: 'POST',
                 path: `/api/v2/polls`,
                 headers: {

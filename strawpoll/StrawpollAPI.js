@@ -6,15 +6,7 @@ var StrawpollAPI = /** @class */ (function () {
     }
     StrawpollAPI.get = function (id) {
         return new Promise(function (resolve, reject) {
-            var options = {
-                host: "strawpoll.me",
-                method: 'GET',
-                path: "/api/v2/polls/" + id,
-                headers: {
-                    Origin: 'brasspoll.herokuapp.com'
-                }
-            };
-            https_1.request(options, function (response) {
+            https_1.get("https://www.strawpoll.me/api/v2/polls/" + id, function (response) {
                 var data = '';
                 // A chunk of data has been recieved.
                 response.on('data', function (chunk) {
@@ -34,6 +26,7 @@ var StrawpollAPI = /** @class */ (function () {
                             }
                         }
                         catch (error) {
+                            console.log(data);
                             console.error(error);
                             reject(error);
                         }
