@@ -68,7 +68,7 @@ export class IgdbPlugin implements Plugin<igdb_retrieval_data_t, igdb_details_t>
         }
         return new Promise<search_result_t<igdb_retrieval_data_t>[]>((resolve, reject) => {
             const options = {
-                hostname: `igdb.com`,
+                hostname: `www.igdb.com`,
                 method: 'GET',
                 path: `/search_autocomplete_all?q=${encodeURI(search)}`,
                 headers: {

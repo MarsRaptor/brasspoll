@@ -71,7 +71,7 @@ var IgdbPlugin = /** @class */ (function () {
         }
         return new Promise(function (resolve, reject) {
             var options = {
-                hostname: "igdb.com",
+                hostname: "www.igdb.com",
                 method: 'GET',
                 path: "/search_autocomplete_all?q=" + encodeURI(search),
                 headers: {
