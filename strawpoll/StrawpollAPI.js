@@ -40,7 +40,7 @@ var StrawpollAPI = /** @class */ (function () {
     StrawpollAPI.new = function (poll_request) {
         return new Promise(function (resolve, reject) {
             var options = {
-                host: "strawpoll.me",
+                host: "www.strawpoll.me",
                 method: 'POST',
                 path: "/api/v2/polls",
                 headers: {
