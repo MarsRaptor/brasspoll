@@ -149,3 +149,4 @@ function updateConfigVar(input) {
 socket.on('__update_configuration_complete__', function (msg) {
     search();
 });
+checkPollCreateButton();
