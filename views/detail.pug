@@ -1,5 +1,8 @@
 extends common.pug
 
+block title_block
+    =`Brasspoll ${poll_id}`
+
 block styles
     link(rel="stylesheet" type="text/css" href="/styles/details.css" media="screen")
 

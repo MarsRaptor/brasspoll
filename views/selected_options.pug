@@ -9,7 +9,10 @@ if options
                         img(src=`${encodeURI(result.icon)}`, alt=`${result.label} icon` class="option_origin_images_icon")                
             td(style="width:100%"): h3= result.label   
             td(onclick=`option_action(this,event)`)
-        tr(class="option_row_detail"): td(colspan="4" ): iframe(frameborder="0" src=`/details/${poll_id}?${Object.keys(result).map(key => encodeURIComponent(key)+"="+ encodeURIComponent(result[key])).join('&')}`)= "Loading page..."
+        if !!result.plugin
+            tr(class="option_row_detail"): td(colspan="4" ): iframe(frameborder="0" src=`/details/${poll_id}?${Object.keys(result).map(key => encodeURIComponent(key)+"="+ encodeURIComponent(result[key])).join('&')}`)= "Loading page..."
+        else
+            tr(class="option_row_detail"): td(colspan="4" ): iframe(frameborder="0")= "Loading page..."
         tr(style="display:none")
 
 
