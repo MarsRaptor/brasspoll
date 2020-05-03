@@ -4,7 +4,9 @@
     --darkest-bg-color: #000d1a;
     --halfdark-bg-color: #121212;
     --light-bg-color: #191919;
+    --bright-bg-color: #212121;
     --default-text-color: #d9d9d9;
+    --disabled-text-color: #808080;
     --option-row-height: 3em;
 }
 
@@ -96,10 +98,25 @@ footer {
     background-color: var(--halfdark-bg-color);
     padding: 0;
     margin: 0;
+    cursor: pointer;
+    /* supported by Chrome and Opera */
+    user-select: none;
+    /* Safari */
+    -webkit-user-select: none;
+    /* Konqueror HTML */
+    -khtml-user-select: none;
+    /* Firefox */
+    -moz-user-select: none;
+    /* Internet Explorer/Edge */
+    -ms-user-select: none;
 }
 
 .options_table>tbody>tr:nth-child(odd) {
     background-color: var(--light-bg-color);
+}
+
+.options_table>tbody>tr:hover {
+    background-color: var(--bright-bg-color);
 }
 
 .option_row>td {
@@ -119,7 +136,6 @@ footer {
 .option_origin_images .option_origin_images_main {
     object-fit: contain;
     height: var(--option-row-height);
-    
 }
 
 .option_origin_images .option_origin_images_icon {
@@ -197,4 +213,34 @@ input[type=text], input[type=search] {
     border: 2px inset #333;
     font-size: medium;
     font-weight: 300;
+}
+
+
+input:hover{
+    cursor: pointer;
+}
+
+input[type=text]:hover,input[type=search]:hover{
+    cursor: text;
+}
+input:disabled{
+    color: var(--disabled-text-color) !important;
+    cursor: not-allowed !important;
+}
+
+.disable-select {
+    user-select: none;
+    /* supported by Chrome and Opera */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+}
+
+#information{
+    width: 100%;
 }

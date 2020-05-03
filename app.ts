@@ -1,3 +1,4 @@
+require('dotenv').config();
 import express from 'express';
 import http from 'http'
 import socket_io from 'socket.io'
@@ -7,7 +8,7 @@ import { plugin_manager, search_result_t } from './plugin/Plugin';
 import { IgdbPlugin } from './plugins/igdb';
 import { MongoClient, Db, Collection } from 'mongodb'
 import StrawpollAPI from './strawpoll/StrawpollAPI';
-require('dotenv').config();
+import { ErrorHelper } from './ErrorHelper';
 
 plugin_manager.addPlugin(new SteamPlugin());
 plugin_manager.addPlugin(new IgdbPlugin());
@@ -50,12 +51,16 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
     response.render('create');
   })
 
+  app.get('/important', (_, response) => {
+    response.render('important');
+  })
+
   app.get("/details", (request, response) => {
     plugin_manager.pluginById(request.query.plugin)?.detailsUnique(request.query).then(details => {
       response.send(plugin_manager.pluginById(request.query.plugin)!.details_template({ option: details }))
-    }).catch(_ => {
-      console.log(_);
-      response.sendStatus(404);
+    }).catch(reason => {
+      console.error(reason);
+      ErrorHelper(response, "RESOURCE_NOT_FOUND");
     })
   })
 
@@ -73,23 +78,25 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
             let details = plugin!.detailsUniqueFromDB(request.query, poll.options as any);
             if (!!details) {
               response.send(plugin!.details_template({ option: details }))
-            } else response.sendStatus(404);
+            } else {
+              ErrorHelper(response, "RESOURCE_NOT_FOUND");
+            }
           } else {
             plugin!.detailsUnique(request.query).then(details => {
               response.send(plugin_manager.pluginById(request.query.plugin)!.details_template({ option: details }))
-            }).catch(_ => {
-              console.log(_);
-              response.sendStatus(404);
+            }).catch(reason => {
+              console.error(reason);
+              ErrorHelper(response, "RESOURCE_NOT_FOUND");
             })
           };
         })
         .catch(reason => {
           console.error(reason);
-          response.status(500).send({ success: false });
+          ErrorHelper(response, "DB_QUERY_FAILED");
         })
 
     } else {
-      response.sendStatus(400);
+      ErrorHelper(response, "DB_QUERY_FAILED");
     }
   })
 
@@ -112,17 +119,17 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
               });
             }).catch(reason => {
               console.error(reason);
-              response.sendStatus(404)
+              ErrorHelper(response, "STRAWPOLL_FAILED");
             })
           };
         })
         .catch(reason => {
           console.error(reason);
-          response.status(500).send({ success: false });
+          ErrorHelper(response, "STRAWPOLL_FAILED");
         })
 
     } else {
-      response.sendStatus(400);
+      ErrorHelper(response, "BAD_REQUEST");
     }
   })
 
@@ -145,17 +152,17 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
               });
             }).catch(reason => {
               console.error(reason);
-              response.sendStatus(404)
+              ErrorHelper(response, "STRAWPOLL_FAILED");
             })
           };
         })
         .catch(reason => {
           console.error(reason);
-          response.status(500).send({ success: false });
+          ErrorHelper(response, "PLUGIN_QUERY_FAILED");
         })
 
     } else {
-      response.sendStatus(400);
+      ErrorHelper(response, "BAD_REQUEST");
     }
 
   })
@@ -170,13 +177,9 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
       try {
         let populated_options = await plugin.detailsMultiple(plugin.validate(body.options.filter((opt) => opt.plugin === plugin.id)));
         to_store.push(...populated_options);
-      } catch (error) {
-        console.error(error)
-        response.status(500).send(
-          {
-            success: false
-          }
-        );
+      } catch (reason) {
+        console.error(reason);
+        ErrorHelper(response, "PLUGIN_QUERY_FAILED");
       }
 
     }
@@ -191,64 +194,48 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
         captcha: body.captcha
       }).then(strawpoll => {
 
-        polls.findOne({ poll_id: strawpoll.id })
-          .then(poll => {
-            if (!!!poll) {
-              polls.insertOne({ poll_id: strawpoll.id, createdAt: new Date(), options: to_store })
-                .then(_ => {
-                  response.status(201).send(
-                    {
-                      success: true,
-                      poll_url: `/${strawpoll.id}`
-                    }
-                  );
-                })
-                .catch(reason => {
-                  console.error(reason)
-                  response.status(500).send(
-                    {
-                      success: false
-                    }
-                  );
-                })
-            } else {
-              response.status(400).send(
-                {
-                  success: false
-                }
-              );
-            }
-          })
-          .catch(reason => {
-            console.error(reason)
-            response.status(500).send(
-              {
-                success: false
+        if (typeof strawpoll.id === "number") {
+          polls.findOne({ poll_id: strawpoll.id })
+            .then(poll => {
+              if (!!!poll) {
+                polls.insertOne({ poll_id: strawpoll.id, createdAt: new Date(), options: to_store })
+                  .then(_ => {
+                    response.status(201).send(
+                      {
+                        success: true,
+                        poll_url: `/${strawpoll.id}`
+                      }
+                    );
+                  })
+                  .catch(reason => {
+                    console.error(reason);
+                    ErrorHelper(response, "DB_QUERY_FAILED");
+                  })
+              } else {
+                ErrorHelper(response, "BAD_REQUEST");
               }
-            );
-          })
+            })
+            .catch(reason => {
+              console.error(reason);
+              ErrorHelper(response, "DB_QUERY_FAILED");
+            })
+        } else {
+          ErrorHelper(response, "STRAWPOLL_FAILED");
+        }
 
       }).catch(reason => {
-        console.error(reason)
-        response.status(500).send(
-          {
-            success: false
-          }
-        );
+        console.error(reason);
+          ErrorHelper(response, "DB_QUERY_FAILED");
       })
 
     } else {
-      response.status(400).send(
-        {
-          success: false
-        }
-      );
+      ErrorHelper(response, "BAD_REQUEST");
     }
   })
 
   io.on('connection', function (socket: socket_io.Socket) {
 
-    console.log('a user connected');
+    // console.log('a user connected');
 
     socket.on('__search__', (search: string) => {
 
@@ -276,7 +263,7 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
     });
 
     socket.on('__update_configuration__', (update: { plugin: string, name: string, checked: boolean, value: string | number }) => {
-      console.log('__update_configuration__', update);
+      //console.log('__update_configuration__', update);
 
       if (!!update.plugin) {
         let plugin = plugin_manager.pluginById(update.plugin);
@@ -293,7 +280,7 @@ MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost/brasspoll', 
 
   const port = process.env.PORT || 3000
   server.listen(port, function () {
-    console.log(`Example app listening on port ${port}!`);
+    console.log(`Brasspoll app listening on port ${port}!`);
   });
 }).catch(reason => console.error(reason))
 

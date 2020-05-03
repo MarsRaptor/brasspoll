@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Configuration = /** @class */ (function () {
-    function Configuration() {
+class Configuration {
+    constructor() {
         this.inputs = [];
         this.checkboxes = {};
         this.colors = {};
@@ -21,7 +21,7 @@ var Configuration = /** @class */ (function () {
         this.urls = {};
         this.weeks = {};
     }
-    Configuration.prototype.create = function (label, input) {
+    create(label, input) {
         switch (input.type) {
             case "checkbox":
                 this.checkboxes[input.name] = Object.assign(input, { label: label });
@@ -64,7 +64,7 @@ var Configuration = /** @class */ (function () {
                 this.inputs.push(this.passwords[input.name]);
                 break;
             case "radio":
-                this.radios[input.name + "[" + input.value + "]"] = Object.assign(input, { label: label });
+                this.radios[`${input.name}[${input.value}]`] = Object.assign(input, { label: label });
                 this.inputs.push(this.radios[input.name]);
                 break;
             case "range":
@@ -92,8 +92,8 @@ var Configuration = /** @class */ (function () {
                 this.inputs.push(this.weeks[input.name]);
                 break;
         }
-    };
-    Configuration.prototype.setValue = function (name, value) {
+    }
+    setValue(name, value) {
         switch (typeof value) {
             case "number":
                 if (!!this.numbers[name]) {
@@ -103,12 +103,12 @@ var Configuration = /** @class */ (function () {
                     this.ranges[name].value = value;
                 }
                 else {
-                    console.warn("Unknown property name \"" + name + "\"");
+                    console.warn(`Unknown property name "${name}"`);
                 }
                 break;
             case "string":
-                var found = false;
-                for (var inputIndex = 0; inputIndex < this.inputs.length; inputIndex++) {
+                let found = false;
+                for (let inputIndex = 0; inputIndex < this.inputs.length; inputIndex++) {
                     if (this.inputs[inputIndex].name === name) {
                         found = true;
                         this.inputs[inputIndex].value = value;
@@ -116,15 +116,15 @@ var Configuration = /** @class */ (function () {
                     }
                 }
                 if (!found) {
-                    console.warn("Unknown property name \"" + name + "\"");
+                    console.warn(`Unknown property name "${name}"`);
                 }
                 break;
             default:
-                console.error("Unhandled value type \"" + typeof value + "\"");
+                console.error(`Unhandled value type "${typeof value}"`);
                 break;
         }
-    };
-    Configuration.prototype.setChecked = function (name, value) {
+    }
+    setChecked(name, value) {
         if (!!this.checkboxes[name]) {
             this.checkboxes[name].checked = value;
         }
@@ -132,10 +132,10 @@ var Configuration = /** @class */ (function () {
             this.radios[name].checked = value;
         }
         else {
-            console.warn("Unknown property name \"" + name + "\"");
+            console.warn(`Unknown property name "${name}"`);
         }
-    };
-    Configuration.prototype.isChecked = function (name) {
+    }
+    isChecked(name) {
         if (!!this.checkboxes[name]) {
             return this.checkboxes[name].checked;
         }
@@ -143,43 +143,42 @@ var Configuration = /** @class */ (function () {
             return this.radios[name].checked;
         }
         else {
-            console.warn("Unknown property name \"" + name + "\"");
+            console.warn(`Unknown property name "${name}"`);
             return undefined;
         }
-    };
-    Configuration.prototype.number = function (name) {
+    }
+    number(name) {
         if (!!this.numbers[name]) {
             return this.numbers[name].value;
         }
         else if (!!this.ranges[name]) {
             return this.ranges[name].value;
         }
-        console.warn("Unknown property name \"" + name + "\"");
+        console.warn(`Unknown property name "${name}"`);
         return undefined;
-    };
-    Configuration.prototype.str = function (name) {
-        for (var inputIndex = 0; inputIndex < this.inputs.length; inputIndex++) {
+    }
+    str(name) {
+        for (let inputIndex = 0; inputIndex < this.inputs.length; inputIndex++) {
             if (this.inputs[inputIndex].name === name && typeof this.inputs[inputIndex].value === "string") {
                 return this.inputs[inputIndex].value;
             }
         }
-        console.warn("Unknown property name \"" + name + "\"");
+        console.warn(`Unknown property name "${name}"`);
         return undefined;
-    };
-    Configuration.prototype.toTemplate = function (plugin) {
-        var pugStr = "";
-        for (var inputIndex = 0; inputIndex < this.inputs.length; inputIndex++) {
-            pugStr += "label\n    = \"" + this.inputs[inputIndex].label + "\"\n";
+    }
+    toTemplate(plugin) {
+        let pugStr = "";
+        for (let inputIndex = 0; inputIndex < this.inputs.length; inputIndex++) {
+            pugStr += `label\n    = "${this.inputs[inputIndex].label}"\n`;
             pugStr += "    input(";
-            for (var key in this.inputs[inputIndex]) {
+            for (const key in this.inputs[inputIndex]) {
                 if (key !== "label") {
-                    pugStr += key + "=\"" + this.inputs[inputIndex][key] + "\" ";
+                    pugStr += `${key}="${this.inputs[inputIndex][key]}" `;
                 }
             }
-            pugStr += "data-plugin=\"" + plugin + "\" onchange=\"updateConfigVar(this)\")\n    br\n";
+            pugStr += `data-plugin="${plugin}" onchange="updateConfigVar(this)")\n    br\n`;
         }
         return pugStr;
-    };
-    return Configuration;
-}());
+    }
+}
 exports.Configuration = Configuration;
