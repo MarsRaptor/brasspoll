@@ -86,7 +86,7 @@ async function create_poll() {
         })
             .then(json => {
             console.debug(json);
-            if (json.ok && json.status === 201 && json.success && !!json.poll_url) {
+            if (json.success && !!json.poll_url) {
                 window.location.href = json.poll_url;
             }
             else {
