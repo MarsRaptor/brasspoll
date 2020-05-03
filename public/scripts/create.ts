@@ -22,10 +22,8 @@ function search() {
     socket.emit('__search__', searchElement.value);
 }
 
-searchElement.addEventListener("search", search)
-
 socket.on('__search_results__', (msg: { search: string; content: string }) => {
-    console.log(msg)
+    console.info(msg)
     if (msg.search == searchElement.value) {
         let temp = parseHTML(msg.content)
         if (temp) {
@@ -37,7 +35,7 @@ socket.on('__search_results__', (msg: { search: string; content: string }) => {
 function checkPollCreateButton() {
 
     let rowCount = selectedOptionsElement.querySelectorAll("tr.option_row").length;
-    createPollElement.disabled = (rowCount <= 0 || rowCount > 25)
+    createPollElement.disabled = (rowCount <= 0 || rowCount > 25) || !titleElement.value.trim().length;
 
 }
 
@@ -79,45 +77,53 @@ async function create_poll() {
             options.push(JSON.parse(row.dataset.json))
         }
     }
-    console.log("pollData", options)
 
-    let pollData = {
-        title: titleElement.value,
-        multi: multiElement.checked,
-        captcha: captchaElement.checked,
-        dupcheck: dupcheckElement.selectedOptions[0].value,
-        options: options
+    console.debug("pollData", options)
+
+    if (options.length > 0) {
+
+        createPollElement.disabled = true;
+
+        let pollData = {
+            title: titleElement.value,
+            multi: multiElement.checked,
+            captcha: captchaElement.checked,
+            dupcheck: dupcheckElement.selectedOptions[0].value,
+            options: options
+        }
+
+        fetch('/new/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(pollData)
+        }).then(response => response.json())
+            .catch(err => {
+                console.error(err);                
+                checkPollCreateButton();
+            })
+            .then(json => {
+                console.debug(json);
+                if (json.ok && json.status === 201 && json.success && !!json.poll_url) {
+                    window.location.href = json.poll_url
+                } else{
+                    ErrorHelper(json.errorCode);
+                    checkPollCreateButton();
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                checkPollCreateButton();
+            })
     }
-
-    fetch('/new/', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(pollData)
-    })
-        .then(response => {
-            console.log(response);
-            if (response.ok && response.status === 201) {
-                response.json().then(json => {
-                    if (json.success && !!json.poll_url) {
-                        window.location.href = json.poll_url
-                    }
-                }).catch(reason => {
-                    console.error(reason);
-                })
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        })
 
 }
 
 
 function updateConfigVar(input: HTMLInputElement) {
-    console.log("updateConfigVar", input);
+    console.debug("updateConfigVar", input);
     socket.emit('__update_configuration__', {
         plugin: input.dataset.plugin,
         name: input.name,
@@ -130,5 +136,8 @@ function updateConfigVar(input: HTMLInputElement) {
 socket.on('__update_configuration_complete__', (msg: any) => {
     search();
 });
+
+searchElement.addEventListener("search", search);
+titleElement.addEventListener("keyup", checkPollCreateButton);
 
 checkPollCreateButton();

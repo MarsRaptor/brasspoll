@@ -18,7 +18,7 @@ export interface Plugin<T extends shallow_t, U extends deep_t> {
     detailsUnique(retreival_data: search_result_t<T>): Promise<details_t<T, U>>;
     detailsMultiple(retreival_data: Array<search_result_t<T>>): Promise<Array<details_t<T, U>>>;
     validate(retreival_data: Array<search_result_t<T>>): Array<search_result_t<T>>;
-    detailsUniqueFromDB(retrieval_data:retrieval_data_t<T>,dbData: Array<search_result_t<T>>): details_t<T, U> | undefined;
+    detailsUniqueFromDB(retrieval_data: retrieval_data_t<T>, dbData: Array<search_result_t<T>>): details_t<T, U> | undefined;
 }
 
 class PluginManager {
@@ -48,7 +48,9 @@ class PluginManager {
         this._plugins.record[plugin.id] = plugin;
         appendFileSync(
             `./views/.generated/search_configuration_mixins.pug`,
-            plugin.appendConfigurationToTemplate().map(l => `${"".padStart(l[1] * 4)}${l[0]}`).join('\n')
+            "div\n" + 
+            plugin.appendConfigurationToTemplate().map(l =>
+                `${"".padStart((l[1] + 1) * 4)}${l[0]}`).join('\n')
         );
     }
 

@@ -7,9 +7,13 @@ function copyStrawpollUrlToClipboard() {
         copyText.select();
         copyText.setSelectionRange(0, 99999); /*For mobile devices*/
         /* Copy the text inside the text field */
-        document.execCommand("copy");
-        /* Alert the copied text */
-        alert("Copied the strawpoll URL: " + copyText.value);
+        if (document.execCommand("copy")) {
+            let button = copyText.nextElementSibling;
+            button.value = "Copied to clipboard";
+            setTimeout(() => {
+                button.value = "Copy to clipboard";
+            }, 2000);
+        }
     }
 }
 function copyBrasspollUrlToClipboard() {
@@ -20,9 +24,13 @@ function copyBrasspollUrlToClipboard() {
         copyText.select();
         copyText.setSelectionRange(0, 99999); /*For mobile devices*/
         /* Copy the text inside the text field */
-        document.execCommand("copy");
-        /* Alert the copied text */
-        alert("Copied the brasspoll URL: " + copyText.value);
+        if (document.execCommand("copy")) {
+            let button = copyText.nextElementSibling;
+            button.value = "Copied to clipboard";
+            setTimeout(() => {
+                button.value = "Copy to clipboard";
+            }, 2000);
+        }
     }
 }
 function resizeStrawpoll(iframe) {

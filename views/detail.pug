@@ -4,7 +4,7 @@ block styles
     link(rel="stylesheet" type="text/css" href="/styles/details.css" media="screen")
 
 block content_zone_left     
-    div(class="information")       
+    table(id="information")       
     table(id="selected_options" class="options_table")
         tbody
             include selected_options.pug
@@ -13,7 +13,7 @@ block content_zone_right
     div(class="information")      
     iframe(src=`https://www.strawpoll.me/embed_1/${poll_id}` id="strawpoll_embed" onload="resizeStrawpoll(this)")= 'Loading poll...' 
     .display_flex
-        input(type="text" id="strawpoll_url" class="to_clipboard_value" value=`https://www.strawpoll.me/${poll_id}` readonly)
+        input(type="text" id="strawpoll_url" class="to_clipboard_value" value=`https://strawpoll.me/${poll_id}` readonly)
         input(type="button" class="to_clipboard_trigger" value="Copy to clipboard" onclick="copyStrawpollUrlToClipboard()")
     .display_flex
         input(type="text" id="brasspoll_url" class="to_clipboard_value" value=`/view/${poll_id}` readonly)

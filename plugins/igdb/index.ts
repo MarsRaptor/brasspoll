@@ -124,7 +124,7 @@ export class IgdbPlugin implements Plugin<igdb_retrieval_data_t, igdb_details_t>
                 headers: {
                     Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
-                    "user-key": "898fea50dfb2215756a0173eb91d073f"
+                    "user-key": process.env.IGDB_OPEN_KEY
                 },
             };
 
@@ -172,7 +172,7 @@ export class IgdbPlugin implements Plugin<igdb_retrieval_data_t, igdb_details_t>
                 headers: {
                     Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
-                    "user-key": "898fea50dfb2215756a0173eb91d073f"
+                    "user-key": process.env.IGDB_OPEN_KEY
                 }
             };
 
@@ -315,7 +315,7 @@ export class IgdbPlugin implements Plugin<igdb_retrieval_data_t, igdb_details_t>
                 headers: {
                     Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
-                    "user-key": "898fea50dfb2215756a0173eb91d073f"
+                    "user-key": process.env.IGDB_OPEN_KEY
                 }
             };
 
@@ -378,7 +378,7 @@ export class IgdbPlugin implements Plugin<igdb_retrieval_data_t, igdb_details_t>
                 headers: {
                     Origin: 'brasspoll.herokuapp.com',
                     Accept: "application/json",
-                    "user-key": "898fea50dfb2215756a0173eb91d073f"
+                    "user-key": process.env.IGDB_OPEN_KEY
                 }
             };
 
