@@ -1,16 +1,16 @@
 if options
     each result in options
-        tr(data-json=JSON.stringify(result) class="option_row" onclick=`${(!!result.plugin) ? "toggleOpenResult(event)" : "" }`)  
+        tr(data-json=JSON.stringify(result.base_option) title=`Toggle details` class="option_row" onclick=`${(!!result.base_option.plugin) ? "toggleOpenResult(event)" : "" }`)  
             td
                 div(class="option_origin_images")
-                    if result.img
-                        img(src=`${encodeURI(result.img)}`, alt=`${result.label} image` class="option_origin_images_main")     
-                    if result.icon        
-                        img(src=`${encodeURI(result.icon)}`, alt=`${result.label} icon` class="option_origin_images_icon")                
-            td(style="width:100%"): h3= result.label   
+                    if result.base_option.img
+                        img(src=`${encodeURI(result.base_option.img)}`, alt=`${result.base_option.label} image` class="option_origin_images_main")     
+                    if result.base_option.icon        
+                        img(src=`${encodeURI(result.base_option.icon)}`, alt=`${result.base_option.label} icon` class="option_origin_images_icon")                
+            td(style="width:100%"): h3= result.base_option.label   
             td(onclick=`option_action(this,event)`)
-        if !!result.plugin
-            tr(class="option_row_detail"): td(colspan="4" ): iframe(frameborder="0" src=`/details/${poll_id}?${Object.keys(result).map(key => encodeURIComponent(key)+"="+ encodeURIComponent(result[key])).join('&')}`)= "Loading page..."
+        if !!result.base_option.plugin
+            tr(class="option_row_detail"): td(colspan="4" ): iframe(frameborder="0" src=`/details/${poll_id}?${Object.keys(result.base_option).map(key => encodeURIComponent(key)+"="+ encodeURIComponent(result.base_option[key])).join('&')}`)= "Loading page..."
         else
             tr(class="option_row_detail"): td(colspan="4" ): iframe(frameborder="0")= "Loading page..."
         tr(style="display:none")

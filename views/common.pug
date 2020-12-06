@@ -3,7 +3,7 @@ html
     head
         title
             block title_block
-        link( href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
+        //- link( href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
         link( rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png")
         link( rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png")
         link( rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png")
@@ -24,7 +24,6 @@ html
                 div(class="content_zone")
                     block content_zone_right
         footer
-            small
-                a(href="/important" style="text-decoration : none;color:#d9d9d9; cursor:default;" target="_blank")= "Footer"
+            small= "Footer"
 
         block inline_scripts

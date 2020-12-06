@@ -1,83 +1,58 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const https_1 = require("https");
-class StrawpollAPI {
-    static get(id) {
-        return new Promise((resolve, reject) => {
-            https_1.get(`https://www.strawpoll.me/api/v2/polls/${id}`, (response) => {
-                let data = '';
-                // A chunk of data has been recieved.
-                response.on('data', (chunk) => {
-                    data += chunk;
-                });
-                response.on('end', () => {
-                    if (data !== '') {
-                        try {
-                            let json = JSON.parse(data);
-                            if (!!json) {
-                                resolve(json);
-                            }
-                            else {
-                                let err = Error("Error in response from strawpoll API");
-                                console.error(err);
-                                reject(err);
-                            }
-                        }
-                        catch (error) {
-                            console.log(data);
-                            console.error(error);
-                            reject(error);
-                        }
-                    }
-                });
-            }).on("error", (err) => {
-                reject(err);
-            }).end();
-        });
+// @ts-check
+const { request } = require('../utils/HttpRequest.js');
+
+/**
+ * Fetch strawpoll.me poll for id
+ * @param {any} id (preferably a number) 
+ * @returns {Promise<{id: number,title:string,multi: boolean,options: string[],votes: number[],dupcheck?:dupcheck,captcha?:boolean} | "No poll given" | "Error in response from strawpoll API">} strawpoll or error string
+ */
+async function fetchPoll(id) {
+    const poll_id = (typeof id === "number") ? id : (typeof id === "string") ? parseInt(id) : NaN;
+    if (isNaN(poll_id)) {
+        return "No poll given";
     }
-    static new(poll_request) {
-        return new Promise((resolve, reject) => {
-            const options = {
-                host: `www.strawpoll.me`,
-                method: 'POST',
-                path: `/api/v2/polls`,
-                headers: {
-                    Origin: 'brasspoll.herokuapp.com',
-                    Accept: "application/json",
-                }
-            };
-            let req = https_1.request(options, (response) => {
-                let data = '';
-                // A chunk of data has been recieved.
-                response.on('data', (chunk) => {
-                    data += chunk;
-                });
-                response.on('end', () => {
-                    if (data !== '') {
-                        try {
-                            let json = JSON.parse(data);
-                            if (!!json) {
-                                resolve(json);
-                            }
-                            else {
-                                let err = Error("Error in response from strawpoll API");
-                                console.error(err);
-                                reject(err);
-                            }
-                        }
-                        catch (error) {
-                            console.error(error);
-                            reject(error);
-                        }
-                    }
-                });
-            });
-            req.on("error", (err) => {
-                reject(err);
-            });
-            req.write(JSON.stringify(poll_request));
-            req.end();
-        });
+    const response = await request(`https://www.strawpoll.me/api/v2/polls/${poll_id}`);
+    if (typeof response === "string") {
+        try {
+            const poll = JSON.parse(response);
+            return poll;
+        } catch (error) {
+            return "Error in response from strawpoll API";
+        }
+    } else {
+        return "Error in response from strawpoll API";
     }
 }
-exports.default = StrawpollAPI;
+
+/**
+ * Create and return new strawpoll.me poll
+ * @param {{title:string,multi:boolean,options:string[],dupcheck?:"normal" | "permissive" | "disabled",captcha?:boolean}} poll_request 
+ * @returns {Promise<{id:number,title:string,multi:boolean,options:string[],dupcheck?:"normal" | "permissive" | "disabled",captcha?:boolean} | "Error in response from strawpoll API">} strawpoll or error string
+ */
+async function create(poll_request) {
+    const response = await request(
+        {
+            host: `www.strawpoll.me`,
+            method: 'POST',
+            path: `/api/v2/polls`,
+            headers: {
+                Origin: 'brasspoll.herokuapp.com',
+                Accept: "application/json",
+            }
+        },
+        JSON.stringify(poll_request)
+    );
+    if (typeof response === "string") {
+        try {
+            const poll = JSON.parse(response);
+            return poll;
+        } catch (error) {
+            return "Error in response from strawpoll API";
+        }
+    } else {
+        return "Error in response from strawpoll API";
+    }
+}
+
+exports.fetchPoll = fetchPoll;
+exports.create = create;

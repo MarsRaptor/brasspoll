@@ -1,9 +1,9 @@
 div(class="steam_stored_title" )
-    h1(class="steam_stored_label")!= ` ${option.label}`
+    h1(class="steam_stored_label")!= ` ${option.base_option.label}`
     div(class="steam_stored_link")
         a(href=encodeURI(option.link) target="_blank")
             h3= `Visit store page `
-            img(src=`${encodeURI(option.icon)}`, alt=`origin icon` class="option_icon")
+            img(src=`${encodeURI(option.base_option.icon)}`, alt=`origin icon` class="option_icon")
 
 div(class="steam_stored_info")    
     div(class="steam_screenshot_viewer")
@@ -32,6 +32,7 @@ script.
 style.
     body{
         background-color: #000d1a;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     ::-webkit-scrollbar {
         width: 10px;
