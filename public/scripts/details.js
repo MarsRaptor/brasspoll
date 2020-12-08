@@ -56,7 +56,7 @@ document.onkeyup = function (evt) {
         const strawpoll_url = document.getElementsByTagName("input").namedItem("strawpoll_url").value;
         const brasspoll_url = document.getElementsByTagName("input").namedItem("brasspoll_url").value;
         holder.type = "text";
-        holder.value = `${strawpoll_url} ${brasspoll_url}`;
+        holder.value = `#poll set Vote on the next game here : [quick/mobile] => ${strawpoll_url} or [detailed] => ${brasspoll_url}`;
         //holder.style.display = "none";
         document.body.append(holder);
 
