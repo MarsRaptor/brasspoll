@@ -34,7 +34,7 @@ async function fetchDetails(query) {
             if (sanitized.length < 1) {
                 return "Invalid query format for plugin";
             }
-            const details = await plugin.fetchDetails(sanitized);
+            const details = await plugin.fetchDetails(sanitized,false);
             if (details.length < 1) {
                 return "Unknown fetch error for plugin";
             }
@@ -59,7 +59,7 @@ async function fetchDetails(query) {
         }
 
         try {
-            const details = await plugin.fetchDetails(sanitized);
+            const details = await plugin.fetchDetails(sanitized,false);
             if (details.length < 1) {
                 return "Unknown fetch error for plugin";
             }
@@ -207,7 +207,7 @@ async function createPoll(poll_raw) {
     for (const plugin of plugin_manager.plugins) {
         const options_for_plugin = poll_raw.options.filter(opt => opt.plugin === plugin.id);
         const sanitized_options_for_plugin = plugin.sanitize(options_for_plugin);
-        const details = await plugin.fetchDetails(sanitized_options_for_plugin);
+        const details = await plugin.fetchDetails(sanitized_options_for_plugin,true);
         if (!!details) {
             options.push(...details);
         }

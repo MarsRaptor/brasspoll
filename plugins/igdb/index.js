@@ -110,9 +110,10 @@ class IgdbPlugin {
     /**
      * Fetch multiple option details from the IGDB database
      * @param {base_option<{id: number,img?:string;icon?:string}>[]} retreival_data 
+     * @param {boolean} optimize
      * @returns {Promise<full_option<{id: number,img?:string;icon?:string},{cover: string;link: string;storyline: string,summary: string,screenshots: {thumbnail: string,fullsize: string}[]}>[]>}
      */
-    async fetchDetails(retreival_data) {
+    async fetchDetails(retreival_data,optimize) {
         if ((await this._refreshAccessToken()) !== true) throw "Error refreshing IGDB access Token";
 
         // GET GAMES UNPOPULATED DETAILS

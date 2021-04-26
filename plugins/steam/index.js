@@ -3,6 +3,7 @@
 const { request } = require('../../utils/HttpRequest.js');
 const { compileFile } = require('pug');
 const { safeParseJSON } = require('../../utils/JsonSafeParse.js');
+const parse5 = require("parse5");
 
 /**
  * @class
@@ -10,7 +11,6 @@ const { safeParseJSON } = require('../../utils/JsonSafeParse.js');
  */
 class SteamPlugin {
     static icon = "https://store.steampowered.com/favicon.ico";
-    static search_result_regex = /data-ds-appid="(\d*)"[^\<]*<div class="match_name">([^"]*)<\/div>[^\<]*<div class="match_img"><img src="([^"]*)"><\/div>/gm;
 
     /** @type {string} */id;
     /** @type {string} */label;
@@ -36,29 +36,84 @@ class SteamPlugin {
 
         /**@type {full_option<{steam_appid: number,img?: string;icon?:string},{}>[]}} */
         const search_results = [];
-        const regex = SteamPlugin.search_result_regex;
-        let m;
-        while ((m = regex.exec(search_result_html)) !== null) {
-            // This is necessary to avoid infinite loops with zero-width matches
-            if (m.index === regex.lastIndex) {
-                regex.lastIndex++;
-            }
 
-            let s = m[3];
-            const n = s.indexOf('?');
-            s = s.substring(0, n != -1 ? n : s.length);
+        const parsed_result = parse5.parseFragment(search_result_html);
+        for (let link_index = 0; link_index < parsed_result.childNodes.length; link_index++) {
+            /** @type {parse5.Element} */
+            const link = (parsed_result.childNodes[link_index]);
+            if (link.tagName == "a") {
 
-            search_results.push(
-                {
-                    base_option: {
-                        icon: SteamPlugin.icon,
-                        steam_appid: Number.parseInt(m[1]),
-                        label: m[2],
-                        img: s,
-                        plugin: this.id
+                let steam_appid = "";
+                let label = "";
+                let img_src = "";
+
+                for (let link_attr_index = 0; link_attr_index < link.attrs.length; link_attr_index++) {
+                    const link_attr = link.attrs[link_attr_index];
+                    if (link_attr.name == "data-ds-appid") {
+                        steam_appid = link_attr.value;
+                        break;
                     }
                 }
-            );
+
+                for (let link_child_index = 0; link_child_index < link.childNodes.length; link_child_index++) {
+
+                    const link_child = (/** @type {parse5.Element} */(link.childNodes[link_child_index]));
+                    if (link_child.nodeName == "div") {
+
+                        for (let link_child_attr_index = 0; link_child_attr_index < link_child.attrs.length; link_child_attr_index++) {
+                            const link_child_attr = link_child.attrs[link_child_attr_index];
+                            if (link_child_attr.name == "class") {
+
+                                if (link_child_attr.value.includes("match_name")) {
+
+                                    for (let name_index = 0; name_index < link_child.childNodes.length; name_index++) {
+                                        const name_node = (/** @type {parse5.TextNode} */(link_child.childNodes[name_index]));
+                                        if (name_node.nodeName == "#text") {
+                                            label = name_node.value;
+                                            break;
+                                        }
+
+                                    }
+
+                                } else if (link_child_attr.value.includes("match_img")) {
+                                    for (let link_grandchild_index = 0; link_grandchild_index < link_child.childNodes.length; link_grandchild_index++) {
+                                        const link_grandchild = (/** @type {parse5.Element} */(link_child.childNodes[link_grandchild_index]));
+                                        if (link_grandchild.nodeName == "img") {
+                                            for (let img_attr_index = 0; img_attr_index < link_grandchild.attrs.length; img_attr_index++) {
+                                                const img_attr = link_grandchild.attrs[img_attr_index];
+                                                if (img_attr.name = "src") {
+                                                    img_src = img_attr.value;
+                                                    const n = img_src.indexOf('?');
+                                                    img_src = img_src.substring(0, n != -1 ? n : img_src.length);
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        }
+
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+
+                search_results.push(
+                    {
+                        base_option: {
+                            icon: SteamPlugin.icon,
+                            steam_appid: Number.parseInt(steam_appid),
+                            label: label,
+                            img: img_src,
+                            plugin: this.id
+                        }
+                    }
+                );
+
+            }
 
         }
 
@@ -96,9 +151,10 @@ class SteamPlugin {
     /**
      * Fetch single option details from the Steam Store
      * @param {base_option<{steam_appid: number,img?:string;icon?:string}>} retreival_data 
+     * @param {boolean} optimize
      * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[]}>>}
      */
-    async fetchDetailsSingle(retreival_data) {
+    async fetchDetailsSingle(retreival_data, optimize) {
 
         const response = await request({
             hostname: `store.steampowered.com`,
@@ -119,6 +175,59 @@ class SteamPlugin {
         }
         const details = parsed[`${retreival_data.steam_appid}`].data;
 
+        let storyline = details.about_the_game;
+
+        if (optimize) {
+            const parsed_storyline = parse5.parseFragment(storyline);
+
+            /**
+             * @param {parse5.Node} node
+             */
+            async function clean_nodes(node) {
+
+                if (node.nodeName == "img") {
+
+                    for (let node_attr_index = 0; node_attr_index < node.attrs.length; node_attr_index++) {
+                        const node_attr = node.attrs[node_attr_index];
+                        if (node_attr.name == "src") {
+                            let img_src = node_attr.value;
+                            const n = img_src.indexOf('?');
+                            img_src = img_src.substring(0, n != -1 ? n : img_src.length);
+                            node_attr.value = img_src;
+
+                            if (node_attr.value.endsWith(".gif")) {
+                                await request(`https://res.cloudinary.com/demo/image/fetch/f_webm/${node_attr.value}`);
+                                node_attr.value = `https://res.cloudinary.com/demo/image/fetch/f_webm/${node_attr.value}`;
+                                node.nodeName = "video";
+                                node.tagName = "video";
+                                node.attrs.push({ name: "loop", value: "true" });
+                                node.attrs.push({ name: "controls", value: "true" });
+
+                            } else {
+                                node.attrs.push({name:"is",value:"lazy-img"});
+                            }
+                        }
+                    }
+
+                }
+
+                // @ts-ignore
+                if (node.childNodes) {
+                    // @ts-ignore
+                    for (let child_index = 0; child_index < node.childNodes.length; child_index++) {
+                        // @ts-ignore
+                        await clean_nodes(node.childNodes[child_index]);
+                    }
+
+                }
+
+            }
+            await clean_nodes(parsed_storyline);
+            storyline = parse5.serialize(parsed_storyline);
+        }
+
+
+
         return {
             base_option: {
                 label: details.name,
@@ -129,7 +238,7 @@ class SteamPlugin {
             },
             cover: details.header_image,
             link: `https://store.steampowered.com/app/${retreival_data.steam_appid}/`,
-            storyline: details.about_the_game,
+            storyline: storyline,
             summary: details.short_description,
             screenshots: details.screenshots.map(s => {
                 return {
@@ -143,13 +252,14 @@ class SteamPlugin {
     /**
      * Fetch multiple option details from the Steam Store
      * @param {base_option<{steam_appid: number,img?:string;icon?:string}>[]} retreival_data 
+     * @param {boolean} optimize
      * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[]}>[]>}
      */
-    fetchDetails(retreival_data) {
+    fetchDetails(retreival_data, optimize) {
         if (retreival_data === undefined || retreival_data === null || retreival_data.length <= 0) {
             return new Promise((resolve, _) => { resolve([]) });
         }
-        return Promise.all(retreival_data.map(d => this.fetchDetailsSingle(d)));
+        return Promise.all(retreival_data.map(d => this.fetchDetailsSingle(d, optimize)));
     }
 }
 

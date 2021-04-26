@@ -17,6 +17,6 @@ type BrasspollPlugin<T extends shallow_t, U extends deep_t> = {
     details_template(locals?: deep_t): string;
     search(search: string): Promise<Array<{ base_option: base_option<T> }>>;
     sanitize(retreival_data: Array<base_option<T>>): Array<base_option<T>>;
-    fetchDetails(retreival_data: Array<base_option<T>>): Promise<Array<full_option<T, U>>>;
+    fetchDetails(retreival_data: Array<base_option<T>>,optimize:boolean): Promise<Array<full_option<T, U>>>;
     optionQuery(poll_id: number, retrieval_data: base_option<T>): { text: string, values: any[] };
 }
