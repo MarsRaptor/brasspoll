@@ -205,6 +205,8 @@ class SteamPlugin {
 
                             } else {
                                 node.attrs.push({name:"is",value:"lazy-img"});
+                                node.attrs.push({name:"data-src",value:node_attr.value});
+                                node_attr.value = "";
                             }
                         }
                     }
