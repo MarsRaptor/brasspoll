@@ -7,7 +7,7 @@ const parse5 = require("parse5");
 
 /**
  * @class
- * @implements {BrasspollPlugin<{steam_appid: number,img?: string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[]}>}
+ * @implements {BrasspollPlugin<{steam_appid: number,img?: string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[],movies: Array<{thumbnail: string,webm: {480: string,max: string}}>}>}
  */
 class SteamPlugin {
     static icon = "https://store.steampowered.com/favicon.ico";
@@ -152,7 +152,7 @@ class SteamPlugin {
      * Fetch single option details from the Steam Store
      * @param {base_option<{steam_appid: number,img?:string;icon?:string}>} retreival_data 
      * @param {boolean} optimize
-     * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[]}>>}
+     * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[],movies: Array<{thumbnail: string,webm: {480: string,max: string}}>}>>}
      */
     async fetchDetailsSingle(retreival_data, optimize) {
 
@@ -168,7 +168,7 @@ class SteamPlugin {
             throw "Error parsing response"
         }
 
-        /** @type {string | {[key:string]:{success:boolean;data:{steam_appid:number;name:string;about_the_game:string;short_description:string;header_image:string;screenshots:{id:number;path_thumbnail:string;path_full:string}[]}}}} */
+        /** @type {string | {[key:string]:{success:boolean;data:{steam_appid:number;name:string;about_the_game:string;short_description:string;header_image:string;screenshots:{id:number;path_thumbnail:string;path_full:string}[],movies:Array<{thumbnail: string,webm: {480: string,max: string}}>}}}} */
         const parsed = safeParseJSON(response);
         if (typeof parsed === "string" || !!!parsed[`${retreival_data.steam_appid}`] || parsed[`${retreival_data.steam_appid}`].success !== true) {
             throw "Error parsing response";
@@ -204,8 +204,8 @@ class SteamPlugin {
                                 node.attrs.push({ name: "controls", value: "true" });
 
                             } else {
-                                node.attrs.push({name:"is",value:"lazy-img"});
-                                node.attrs.push({name:"data-src",value:node_attr.value});
+                                node.attrs.push({ name: "is", value: "lazy-img" });
+                                node.attrs.push({ name: "data-src", value: node_attr.value });
                                 node_attr.value = "";
                             }
                         }
@@ -228,7 +228,28 @@ class SteamPlugin {
             storyline = parse5.serialize(parsed_storyline);
         }
 
+        const screenshots = details.screenshots ? details.screenshots.map(s => {
+            return {
+                thumbnail: s.path_thumbnail,
+                fullsize: s.path_full
+            }
+        }) : [];
 
+        const movies = details.movies ? details.movies.map(m => {
+            const webm = {};
+            for (const key in m.webm) {
+                if (Object.hasOwnProperty.call(m.webm, key)) {
+                    let src = m.webm[key];
+                    const n = src.indexOf('?');
+                    src = src.substring(0, n != -1 ? n : src.length);
+                    webm[key] = src;
+                }
+            }
+            return {
+                thumbnail: m.thumbnail,
+                webm: m.webm
+            }
+        }) : [];
 
         return {
             base_option: {
@@ -242,12 +263,8 @@ class SteamPlugin {
             link: `https://store.steampowered.com/app/${retreival_data.steam_appid}/`,
             storyline: storyline,
             summary: details.short_description,
-            screenshots: details.screenshots.map(s => {
-                return {
-                    thumbnail: s.path_thumbnail,
-                    fullsize: s.path_full
-                }
-            })
+            screenshots: screenshots,
+            movies: movies
         }
     }
 
@@ -255,7 +272,7 @@ class SteamPlugin {
      * Fetch multiple option details from the Steam Store
      * @param {base_option<{steam_appid: number,img?:string;icon?:string}>[]} retreival_data 
      * @param {boolean} optimize
-     * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[]}>[]>}
+     * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[],movies: Array<{thumbnail: string,webm: {480: string,max: string}}>}>[]>}
      */
     fetchDetails(retreival_data, optimize) {
         if (retreival_data === undefined || retreival_data === null || retreival_data.length <= 0) {

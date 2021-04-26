@@ -13,21 +13,36 @@ html
 
         div(class="steam_stored_info")    
             div(class="steam_screenshot_viewer")
-                if option.screenshots.length>0
-                    img(id=`steam_screenshot_viewer_img_${escape(option.label)}` src=`${option.screenshots[0].fullsize }` )
+                if option.screenshots.length>0 || option.movies.length>0
+                    if option.movies.length>0
+                        div(id=`steam_video_box`)
+                            select(onclick ="switch_video_source(this)")
+                                option( value=option.movies[0].webm["480"] selected)= "480p"
+                                option( value=option.movies[0].webm["max"])= "max"
+                            video(src=option.movies[0].webm["480"] poster=option.movies[0].thumbnail controls)
+                        if option.screenshots.length>0
+                            img(id=`steam_screenshot_viewer_img` style="display:none;")                        
+                    else                    
+                        if option.screenshots.length>0
+                            div(id=`steam_video_box` style="display:none;")
+                            img(id=`steam_screenshot_viewer_img` src=`${option.screenshots[0].fullsize }` )                   
+                    
                     div(class="steam_screenshot_viewer_gallery")   
-                        img(
-                            src=option.screenshots[0].thumbnail 
-                            class="screenshot_thumbnail"
-                            onclick=`openSteamScreenshot("steam_screenshot_viewer_img_${escape(option.label)}","${option.screenshots[0].fullsize}")`
-                            )     
-                        - for (var i = 1; i< option.screenshots.length; i++)
-                            img(
-                                data-src=option.screenshots[i].thumbnail 
-                                is="lazy-img"
-                                class="screenshot_thumbnail"
-                                onclick=`openSteamScreenshot("steam_screenshot_viewer_img_${escape(option.label)}","${option.screenshots[i].fullsize}")`
-                                )                
+                        if option.movies.length>0
+                            - for (var i = 0; i< option.movies.length; i++)
+                                img(
+                                    src=option.movies[i].thumbnail 
+                                    class="screenshot_thumbnail"
+                                    onclick=`openSteamMovie('${JSON.stringify(option.movies[i])}')`
+                                    )                                
+                        if option.screenshots.length>0  
+                            - for (var i = 0; i< option.screenshots.length; i++)
+                                img(
+                                    data-src=option.screenshots[i].thumbnail 
+                                    is="lazy-img"
+                                    class="screenshot_thumbnail"
+                                    onclick=`openSteamScreenshot("${option.screenshots[i].fullsize}")`
+                                    )                
 
             div(class="steam_cover_and_summary")
                 div(class="steam_cover")
@@ -36,9 +51,32 @@ html
                 div(class="steam_summary"): p!=option.summary
         div(class="steam_storyline"): p!= option.storyline
         script.
-            function openSteamScreenshot(steam_screenshot_viewer_img, src) {
-                document.getElementById(steam_screenshot_viewer_img).src = src;
+
+            function openSteamScreenshot(src) {
+                document.getElementById("steam_screenshot_viewer_img").src = src;
+                document.getElementById("steam_screenshot_viewer_img").style.display = "inline"
+                document.getElementById("steam_video_box").style.display = "none";
+                document.getElementById("steam_video_box").innerHTML = "";
             }
+
+            function openSteamMovie(movie) {
+                movie = JSON.parse(movie);
+                document.getElementById("steam_screenshot_viewer_img").style.display = "none";
+                document.getElementById("steam_video_box").style.display = "block";
+                document.getElementById("steam_video_box").innerHTML = `
+                    <select onchange="switch_video_source(this)">
+                        <option value="${movie.webm["480"]}" selected>480p</option>
+                        <option value="${movie.webm["max"]}" >max</option>
+                    </select>
+                    <video src="${movie.webm["480"]}" poster="${movie.thumbnail}" controls></video>
+                `;
+            }
+
+            function switch_video_source(select){
+                const current_video = select.parentElement.querySelector("video");
+                current_video.src = select.value;                               
+            }
+
             customElements.define('lazy-img',class extends HTMLImageElement{
                 static get observedAttributes(){return ["activated"];}
                 constructor() {super();this.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABaBAMAAADN6EBhAAAAG1BMVEUAAAD///9fX1+fn5/f39+/v78/Pz9/f38fHx+7aoa+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACW0lEQVRYw+2XPW/bMBCGFcm2OPZqUvZooQG62oGBejRT9GMMg6JZFbhFVwtogYxUE6T92b0jKVvyYOirQwu+gwkb8CPy3jveKQi8vLy8vLz+Ib2S/BYXBgsG+/LHYtaZdwmo9+eA4bYNLwajxRngqhUwh2vNLmFOwMrPnYEMpuY/YihgBEtaRqAHAl6ANnG/02UMf0n+YIFP9hE5AH5ha3irGwDvxfHwBkgm8YyATCbBEYif0CSV0tkJMOXZT/mRgE+QHY8cw+fg6zEJzpj8sg5kcGPOW8wmboMWWNBJ1LwBMKkDQ9pWxBH4pdygAa6IVUzb7zAC57KApOqyxI0HY94+hmNnUgEgqkCTXeXTmrh85dJmdAC+O+RlK+DI5SEsT3bIf6PXHYARuUrcrBLDEDQanYouMXS1rISLYXxwGZ+16OAyVsAHzb6jpad5iJUyP83DpNHtUL8PU4GVsjW1XJ45T1jzSrFFWrmxTS1rAxy7M99TWJrWMoJ+1HvKoxR7e9swsGcOJQIna4yNb8Bef1v1NlrN/Bce+H8BHyXf0Jed5He0Tj7xhz5AM33u3a1LPWqFl+OqBzAX2UTRZDTVz2pK4A3LoTvQNJQxjYpLaoS2K8U9gBE1aaSFtFJDzenKlt2BdmxQWzfN60Dd9HP5ws7bBHh+rRAoaV5IBwCGimzWdgAZAqhAvPk2wA7LGMawcTHc9oth6fKIhiJMH+uy6p2HmQGmCKSJJoT+lUIFsgOcw3Ci6VUpZS0zicstXRY40fBet83OvEbR29SVsXiy5puuLnt5eXl5ebXSH4wag2cWRt4sAAAAAElFTkSuQmCC";const _ = () => {this.setAttribute("activated", "true");this.removeEventListener("pointerdown", _);};this.addEventListener("pointerdown", _);}
@@ -88,7 +126,7 @@ html
                 padding: 5px;
             }
 
-            .steam_screenshot_viewer img {
+            .steam_screenshot_viewer img ,.steam_screenshot_viewer video{
                 width: 100%;
             }
 
@@ -144,9 +182,14 @@ html
                 display: inline-flex;
             }
 
-            .steam_screenshot_viewer_gallery img {
+            .steam_screenshot_viewer_gallery img,.steam_screenshot_viewer_gallery video  {
                 max-height: 100%;
                 max-width: 100%;
+            }
+
+            .steam_screenshot_viewer select {
+                position:absolute;
+                z-index: 5;
             }
 
             .steam_storyline {
