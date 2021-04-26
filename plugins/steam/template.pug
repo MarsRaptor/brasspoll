@@ -1,199 +1,225 @@
-div(class="steam_stored_title" )
-    h1(class="steam_stored_label")!= ` ${option.base_option.label}`
-    div(class="steam_stored_link")
-        a(href=encodeURI(option.link) target="_blank")
-            h3= `Visit store page `
-            img(src=`${encodeURI(option.base_option.icon)}`, alt=`origin icon` class="option_icon")
-
-div(class="steam_stored_info")    
-    div(class="steam_screenshot_viewer")
-        if option.screenshots.length>0
-            img(id=`steam_screenshot_viewer_img_${escape(option.label)}` src=`${option.screenshots[0].fullsize }` )
-        else
-            img(id=`steam_screenshot_viewer_img_${escape(option.label)}`)
-        div(class="steam_screenshot_viewer_gallery")        
-            - for (var i = 0; i< option.screenshots.length; i++)
-                img(
-                    src=option.screenshots[i].thumbnail 
-                    class="screenshot_thumbnail"
-                    onclick=`openSteamScreenshot("steam_screenshot_viewer_img_${escape(option.label)}","${option.screenshots[i].fullsize}")`
-                    )
-
-    div(class="steam_cover_and_summary")
-        div(class="steam_cover")
-            if option.cover
-                img(src=`${encodeURI(option.cover)}`, alt=`${option.label} cover`)
-        div(class="steam_summary"): p!=option.summary
-div(class="steam_storyline"): p!= option.storyline
-script.
-    function openSteamScreenshot(steam_screenshot_viewer_img, src) {
-        document.getElementById(steam_screenshot_viewer_img).src = src;
-    }
-style.
-    body{
-        background-color: #000d1a;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    ::-webkit-scrollbar {
-        width: 10px;
+-
+    function makeImagesLazy(str){
+        const regex = /(?<=<img[^>]+)(?<!data-)(src=)(?="[^">]+")/gm;       
+        const subst = " is=\"lazy-img\" data-src=";
+        return str.replace(regex, subst);
     }
 
-    /* Track */
+doctype html
+html
+    head
+        title!= `${option.base_option.label}`
 
-    ::-webkit-scrollbar-track {
-        background: #cccccc;
-    }
+    body
+        div(class="steam_stored_title" )
+            h1(class="steam_stored_label")!= ` ${option.base_option.label}`
+            div(class="steam_stored_link")
+                a(href=encodeURI(option.link) target="_blank")
+                    h3= `Visit store page `
+                    img(src=`${encodeURI(option.base_option.icon)}`, alt=`origin icon` class="option_icon")
 
-    /* Handle */
+        div(class="steam_stored_info")    
+            div(class="steam_screenshot_viewer")
+                if option.screenshots.length>0
+                    img(id=`steam_screenshot_viewer_img_${escape(option.label)}` data-src=`${option.screenshots[0].fullsize }` is="lazy-img" )
+                else
+                    img(id=`steam_screenshot_viewer_img_${escape(option.label)}`)
+                div(class="steam_screenshot_viewer_gallery")        
+                    - for (var i = 0; i< option.screenshots.length; i++)
+                        img(
+                            data-src=option.screenshots[i].thumbnail 
+                            is="lazy-img"
+                            class="screenshot_thumbnail"
+                            onclick=`openSteamScreenshot("steam_screenshot_viewer_img_${escape(option.label)}","${option.screenshots[i].fullsize}")`
+                            )
 
-    ::-webkit-scrollbar-thumb {
-        background: #888;
-    }
+            div(class="steam_cover_and_summary")
+                div(class="steam_cover")
+                    if option.cover
+                        img(src=`${encodeURI(option.cover)}`, alt=`${option.label} cover`)
+                div(class="steam_summary"): p!=option.summary
+        div(class="steam_storyline"): p!= makeImagesLazy(option.storyline)
+        script.
+            function openSteamScreenshot(steam_screenshot_viewer_img, src) {
+                document.getElementById(steam_screenshot_viewer_img).src = src;
+            }
+            customElements.define('lazy-img',class extends HTMLImageElement{
+                static get observedAttributes(){return ["activated"];}
+                constructor() {super();this.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABaBAMAAADN6EBhAAAAG1BMVEUAAAD///9fX1+fn5/f39+/v78/Pz9/f38fHx+7aoa+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACW0lEQVRYw+2XPW/bMBCGFcm2OPZqUvZooQG62oGBejRT9GMMg6JZFbhFVwtogYxUE6T92b0jKVvyYOirQwu+gwkb8CPy3jveKQi8vLy8vLz+Ib2S/BYXBgsG+/LHYtaZdwmo9+eA4bYNLwajxRngqhUwh2vNLmFOwMrPnYEMpuY/YihgBEtaRqAHAl6ANnG/02UMf0n+YIFP9hE5AH5ha3irGwDvxfHwBkgm8YyATCbBEYif0CSV0tkJMOXZT/mRgE+QHY8cw+fg6zEJzpj8sg5kcGPOW8wmboMWWNBJ1LwBMKkDQ9pWxBH4pdygAa6IVUzb7zAC57KApOqyxI0HY94+hmNnUgEgqkCTXeXTmrh85dJmdAC+O+RlK+DI5SEsT3bIf6PXHYARuUrcrBLDEDQanYouMXS1rISLYXxwGZ+16OAyVsAHzb6jpad5iJUyP83DpNHtUL8PU4GVsjW1XJ45T1jzSrFFWrmxTS1rAxy7M99TWJrWMoJ+1HvKoxR7e9swsGcOJQIna4yNb8Bef1v1NlrN/Bce+H8BHyXf0Jed5He0Tj7xhz5AM33u3a1LPWqFl+OqBzAX2UTRZDTVz2pK4A3LoTvQNJQxjYpLaoS2K8U9gBE1aaSFtFJDzenKlt2BdmxQWzfN60Dd9HP5ws7bBHh+rRAoaV5IBwCGimzWdgAZAqhAvPk2wA7LGMawcTHc9oth6fKIhiJMH+uy6p2HmQGmCKSJJoT+lUIFsgOcw3Ci6VUpZS0zicstXRY40fBet83OvEbR29SVsXiy5puuLnt5eXl5ebXSH4wag2cWRt4sAAAAAElFTkSuQmCC";const _ = () => {this.setAttribute("activated", "true");this.removeEventListener("pointerdown", _);};this.addEventListener("pointerdown", _);}
+                attributeChangedCallback(_, __, newValue) {
+                    if (newValue === "true" && this.dataset.src) {
+                        let loading_chain = ()=>{                            
+                            this.removeEventListener("load",loading_chain);
+                            this.src = this.dataset.src;
+                        }
+                        this.addEventListener("load",loading_chain);
+                        this.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABaBAMAAADN6EBhAAAAG1BMVEUAAAD////f398fHx+fn59/f3+/v78/Pz9fX18IpkIwAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABmklEQVRYhe2UQU+DQBBGJ922cOxAbT2WWPVKmxivQg9eoU30KkajV2PSeBQP/m6/3QUNjbbQcNA4LynDLsxLmdldIkEQBEEQBEEQNB1vy8N0QIqT/yZszB8SqpinIaIT84kum3PrrWwNFT8v+Z7s3GI2rilMmfkAMUL0QhO9qBDmmDsqnqU1hT1+oDU62uOFWvMFdRFTLoS8UtnQvIO5msLZCJfMpxkSKRiY2CuFcHSYzJxbVxj5ZDJyHfGpqW/FRnij5aGdy2oKAyRRvxggM9PjsimJFZp38ppClI1QOFzUyxX7FOhx/iV0ITTvPDUVvqOTEPJ3wmQPYZ/57jpt4R+WNUyHoa3hhCo1dJvWsOxyoEVYPrajVWHUpMt2HY6N0EUN9djlqlCvQ2fnOmRDWO6UaBieR0iyu6Iq7PIl5nzcJ5+/H4XlXp4jjPJDs7e9jRra/V1XiFPmGDlqydPXjv622FtsdJlcnDb5DmFj9jkjt7qySXtCXVrHrO6WmONcfNOHb1s4un2n7fmIzjLvsU2fIAiCIAjCL+UDejtRXcCbC4cAAAAASUVORK5CYII=";
+                    }}},{ extends: 'img' });
+        style.
+            body{
+                background-color: #000d1a;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
 
-    /* Handle on hover */
+            /* Track */
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
+            ::-webkit-scrollbar-track {
+                background: #cccccc;
+            }
 
-    .steam_screenshot_viewer {
-        flex: 5;
-        width: 100%;
-        font-size: 17px;
-        background-color: #12121299;
-        color: #FFF;
-        border: 1px solid #333;
-        padding: 5px;
-    }
+            /* Handle */
 
-    .steam_screenshot_viewer img {
-        width: 100%;
-    }
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
 
-    .steam_stored_info {
-        display: flex;
-        margin-top: 5px;
-    }
+            /* Handle on hover */
 
-    .steam_cover_and_summary {
-        flex: 2;
-        font-size: 17px;
-        vertical-align: top;
-        color: #FFF;
-        padding: 5px;
-        margin-left: 5px;
-        background-color: #12121299;
-        outline: none;
-        border: 1px solid #333;
-    }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
 
-    .steam_cover {
-        width: 100%;
-    }
+            .steam_screenshot_viewer {
+                flex: 5;
+                width: 100%;
+                font-size: 17px;
+                background-color: #12121299;
+                color: #FFF;
+                border: 1px solid #333;
+                padding: 5px;
+            }
 
-    .steam_cover img {
-        width: 100%;
-        vertical-align: middle;
-        background-color: #12121299;
-        border-radius: 3px;
-        outline: none;
-        border: 1px solid #333;
-    }
+            .steam_screenshot_viewer img {
+                width: 100%;
+            }
 
-    .steam_summary {
-        font-size: 17px;
-        vertical-align: top;
-        background-color: #000d1a99;
-        color: #cccccc;
-        border-radius: 3px;
-        border: 1px solid #333;
-        text-align: justify;
-        margin-top: 10px;
-        object-fit: contain;
-        padding: 0 5px;
-    }
+            .steam_stored_info {
+                display: flex;
+                margin-top: 5px;
+            }
 
-    .steam_screenshot_viewer_gallery {
-        overflow: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
-        object-fit: contain;
-        height: 100px;
-        display: inline-flex;
-    }
+            .steam_cover_and_summary {
+                flex: 2;
+                font-size: 17px;
+                vertical-align: top;
+                color: #FFF;
+                padding: 5px;
+                margin-left: 5px;
+                background-color: #12121299;
+                outline: none;
+                border: 1px solid #333;
+            }
 
-    .steam_screenshot_viewer_gallery img {
-        max-height: 100%;
-        max-width: 100%;
-    }
+            .steam_cover {
+                width: 100%;
+            }
 
-    .steam_storyline {
-        font-size: 17px;
-        vertical-align: bottom;
-        background-color: #12121299;
-        color: #cccccc;
-        border-radius: 3px;
-        outline: none;
-        border: 1px solid #333;
-        padding: 0 10px;
-        text-align: justify;
-        margin-top: 5px;
-        margin-bottom: 5px;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
+            .steam_cover img {
+                width: 100%;
+                vertical-align: middle;
+                background-color: #12121299;
+                border-radius: 3px;
+                outline: none;
+                border: 1px solid #333;
+            }
 
-    .steam_stored_title {
-        vertical-align: bottom;
-        margin-top: 5px;
-        display: flex;
-    }
+            .steam_summary {
+                font-size: 17px;
+                vertical-align: top;
+                background-color: #000d1a99;
+                color: #cccccc;
+                border-radius: 3px;
+                border: 1px solid #333;
+                text-align: justify;
+                margin-top: 10px;
+                object-fit: contain;
+                padding: 0 5px;
+            }
 
-    .steam_stored_title h1 {
-        font-size: 2em;
-        color: #d9d9d9;
-        flex: 5;
-        text-align: left;
-        vertical-align: middle;
-        padding: 0;
-        margin: 0;
-        padding: 5px;
-        background-color: #12121299;
-        outline: none;
-        border: 1px solid #333;
-    }
+            .steam_screenshot_viewer_gallery {
+                overflow: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                object-fit: contain;
+                height: 100px;
+                display: inline-flex;
+            }
 
-    .steam_stored_link {
-        flex: 2;
-        text-align: right;
-        background-color: #12121299;
-        outline: none;
-        border: 1px solid #333;
-        padding: 5px;
-        margin-left: 5px;
-        vertical-align: middle;
-        border-radius: 3px;
+            .steam_screenshot_viewer_gallery img {
+                max-height: 100%;
+                max-width: 100%;
+            }
 
-    }
+            .steam_storyline {
+                font-size: 17px;
+                vertical-align: bottom;
+                background-color: #12121299;
+                color: #cccccc;
+                border-radius: 3px;
+                outline: none;
+                border: 1px solid #333;
+                padding: 0 10px;
+                text-align: justify;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
 
-    .steam_stored_link a {
-        text-decoration: none;
-        color: #cccccc;
-        text-align: center;
-        vertical-align: middle;
-        height: 2em;
-        padding: 0;
-        margin: 0;
-    }
-    .steam_stored_link h3 {
-        display: inline;
-        padding: 0;
-        margin: 0;
-        margin-right: 10px;
-    }
+            .steam_stored_title {
+                vertical-align: bottom;
+                margin-top: 5px;
+                display: flex;
+            }
 
-    .steam_stored_link img {
-        height: 2em;
-        margin-top: 5px;
-        margin-right: 10px;
-    }
+            .steam_stored_title h1 {
+                font-size: 2em;
+                color: #d9d9d9;
+                flex: 5;
+                text-align: left;
+                vertical-align: middle;
+                padding: 0;
+                margin: 0;
+                padding: 5px;
+                background-color: #12121299;
+                outline: none;
+                border: 1px solid #333;
+            }
+
+            .steam_stored_link {
+                flex: 2;
+                text-align: right;
+                background-color: #12121299;
+                outline: none;
+                border: 1px solid #333;
+                padding: 5px;
+                margin-left: 5px;
+                vertical-align: middle;
+                border-radius: 3px;
+
+            }
+
+            .steam_stored_link a {
+                text-decoration: none;
+                color: #cccccc;
+                text-align: center;
+                vertical-align: middle;
+                height: 2em;
+                padding: 0;
+                margin: 0;
+            }
+            .steam_stored_link h3 {
+                display: inline;
+                padding: 0;
+                margin: 0;
+                margin-right: 10px;
+            }
+
+            .steam_stored_link img {
+                height: 2em;
+                margin-top: 5px;
+                margin-right: 10px;
+            }

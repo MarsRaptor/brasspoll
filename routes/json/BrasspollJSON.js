@@ -22,4 +22,17 @@ route_json_brasspolls.post('/new', async (request, response) => {
     return;
 })
 
+route_json_brasspolls.get('/:poll_id', async (request, response) => {
+    const poll = await BrasspollAPI.fetchPoll(request.params.poll_id);
+    if (typeof poll === "string") {
+        response.status(404).send({ success: false, errorCode: 404 });
+        return;
+    }
+    response.status(200).send({
+        poll_id: poll.poll_id,
+        options: poll.options.map(opt => opt.base_option)
+    });
+    return;
+})
+
 exports.route_json_brasspolls = route_json_brasspolls;

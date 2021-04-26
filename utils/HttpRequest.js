@@ -1,5 +1,4 @@
 // @ts-check
-const { rejects } = require('assert');
 const { request } = require('https');
 
 /**
