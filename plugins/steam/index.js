@@ -196,7 +196,7 @@ class SteamPlugin {
                             node_attr.value = img_src;
 
                             if (node_attr.value.endsWith(".gif")) {
-                                await request(`https://res.cloudinary.com/demo/image/fetch/f_webm/${node_attr.value}`);
+                                request(`https://res.cloudinary.com/demo/image/fetch/f_webm/${node_attr.value}`);
                                 node_attr.value = `https://res.cloudinary.com/demo/image/fetch/f_webm/${node_attr.value}`;
                                 node.nodeName = "video";
                                 node.tagName = "video";
