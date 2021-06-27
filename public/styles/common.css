@@ -83,6 +83,14 @@ footer {
     flex: 1;
 }
 
+.flex_left {
+    flex: 1;
+}
+
+.flex_right {
+    flex: content;
+}
+
 .content_zone {
     margin: 0.5em;
     padding: 0.5em;

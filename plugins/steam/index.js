@@ -152,7 +152,7 @@ class SteamPlugin {
      * Fetch single option details from the Steam Store
      * @param {base_option<{steam_appid: number,img?:string;icon?:string}>} retreival_data 
      * @param {boolean} optimize
-     * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,screenshots:{thumbnail:string,fullsize:string}[],movies: Array<{thumbnail: string,webm: {480: string,max: string}}>}>>}
+     * @returns {Promise<full_option<{steam_appid: number,img?:string;icon?:string},{cover:string;link:string;storyline:string,summary:string,developers:string[],publishers:string[],release_date:{coming_soon:boolean,date:string},screenshots:{thumbnail:string,fullsize:string}[],movies: Array<{thumbnail: string,webm: {480: string,max: string}}>}>>}
      */
     async fetchDetailsSingle(retreival_data, optimize) {
 
@@ -168,7 +168,7 @@ class SteamPlugin {
             throw "Error parsing response"
         }
 
-        /** @type {string | {[key:string]:{success:boolean;data:{steam_appid:number;name:string;about_the_game:string;short_description:string;header_image:string;screenshots:{id:number;path_thumbnail:string;path_full:string}[],movies:Array<{thumbnail: string,webm: {480: string,max: string}}>}}}} */
+        /** @type {string | {[key:string]:{success:boolean;data:{steam_appid:number;name:string;about_the_game:string;short_description:string;developers:string[];publishers:string[];release_date:{coming_soon:boolean,date:string};header_image:string;screenshots:{id:number;path_thumbnail:string;path_full:string}[],movies:Array<{thumbnail: string,webm: {480: string,max: string}}>}}}} */
         const parsed = safeParseJSON(response);
         if (typeof parsed === "string" || !!!parsed[`${retreival_data.steam_appid}`] || parsed[`${retreival_data.steam_appid}`].success !== true) {
             throw "Error parsing response";
@@ -263,6 +263,9 @@ class SteamPlugin {
             link: `https://store.steampowered.com/app/${retreival_data.steam_appid}/`,
             storyline: storyline,
             summary: details.short_description,
+            developers: details.developers,
+            publishers: details.publishers,
+            release_date: details.release_date,
             screenshots: screenshots,
             movies: movies
         }

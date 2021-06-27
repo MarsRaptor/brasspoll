@@ -17,8 +17,8 @@ html
                     if option.movies.length>0
                         div(id=`steam_video_box`)
                             select(onclick ="switch_video_source(this)")
-                                option( value=option.movies[0].webm["480"] selected)= "480p"
-                                option( value=option.movies[0].webm["max"])= "max"
+                                option( value=option.movies[0].webm["480"])= "480p"
+                                option( value=option.movies[0].webm["max"] selected)= "max"
                             video(src=option.movies[0].webm["480"] poster=option.movies[0].thumbnail controls)
                         if option.screenshots.length>0
                             img(id=`steam_screenshot_viewer_img` style="display:none;")                        
@@ -38,8 +38,7 @@ html
                         if option.screenshots.length>0  
                             - for (var i = 0; i< option.screenshots.length; i++)
                                 img(
-                                    data-src=option.screenshots[i].thumbnail 
-                                    is="lazy-img"
+                                    src=option.screenshots[i].thumbnail 
                                     class="screenshot_thumbnail"
                                     onclick=`openSteamScreenshot("${option.screenshots[i].fullsize}")`
                                     )                
@@ -48,7 +47,31 @@ html
                 div(class="steam_cover")
                     if option.cover
                         img(src=`${encodeURI(option.cover)}`, alt=`${option.label} cover`)
-                div(class="steam_summary"): p!=option.summary
+                div(class="steam_summary"): p!=option.summary                   
+                    div(class="steam_developers")
+                        span
+                            | DEVELOPER: 
+                            if option.developers
+                                - for (var i=0; i<option.developers.length;i++)
+                                    a(href=`https://store.steampowered.com/developer/${option.developers[i]}`, target="_blank", rel="noopener noreferrer")= option.developers[i]
+                                    br
+                    div(class="steam_publishers")
+                        span
+                            | PUBLISHER: 
+                            if option.publishers
+                                - for (var i=0; i<option.publishers.length;i++)
+                                    a(href=`https://store.steampowered.com/publisher/${option.publishers[i]}`, target="_blank", rel="noopener noreferrer")= option.publishers[i]
+                                    br       
+                    div(class="steam_release_date")
+                        span
+                            | RELEASE DATE: 
+                            if option.release_date
+                                if option.release_date.coming_soon == true
+                                    | Coming soon...
+                                else if option.release_date.date
+                                    em()= option.release_date.date
+                                else 
+                                    | Coming soon...                             
         div(class="steam_storyline"): p!= option.storyline
         script.
 
@@ -65,8 +88,8 @@ html
                 document.getElementById("steam_video_box").style.display = "block";
                 document.getElementById("steam_video_box").innerHTML = `
                     <select onchange="switch_video_source(this)">
-                        <option value="${movie.webm["480"]}" selected>480p</option>
-                        <option value="${movie.webm["max"]}" >max</option>
+                        <option value="${movie.webm["480"]}" >480p</option>
+                        <option value="${movie.webm["max"]}" selected>max</option>
                     </select>
                     <video src="${movie.webm["480"]}" poster="${movie.thumbnail}" controls></video>
                 `;
@@ -119,7 +142,7 @@ html
             .steam_screenshot_viewer {
                 flex: 5;
                 width: 100%;
-                font-size: 17px;
+                font-size: 1em;
                 background-color: #12121299;
                 color: #FFF;
                 border: 1px solid #333;
@@ -137,7 +160,7 @@ html
 
             .steam_cover_and_summary {
                 flex: 2;
-                font-size: 17px;
+                font-size: 1em;
                 vertical-align: top;
                 color: #FFF;
                 padding: 5px;
@@ -161,7 +184,7 @@ html
             }
 
             .steam_summary {
-                font-size: 17px;
+                font-size: 1em;
                 vertical-align: top;
                 background-color: #000d1a99;
                 color: #cccccc;
@@ -182,9 +205,21 @@ html
                 display: inline-flex;
             }
 
+            .steam_screenshot_viewer {
+                background-color: black;
+            }
+            .steam_screenshot_viewer img,.steam_screenshot_viewer video  {
+                max-height: 60vh;
+                object-fit: contain;
+            }
+
             .steam_screenshot_viewer_gallery img,.steam_screenshot_viewer_gallery video  {
                 max-height: 100%;
                 max-width: 100%;
+            }
+
+            .steam_screenshot_viewer_gallery img:hover, .steam_screenshot_viewer_gallery video:hover{
+                cursor: pointer;
             }
 
             .steam_screenshot_viewer select {
@@ -193,7 +228,7 @@ html
             }
 
             .steam_storyline {
-                font-size: 17px;
+                font-size: 1em;
                 vertical-align: bottom;
                 background-color: #12121299;
                 color: #cccccc;
